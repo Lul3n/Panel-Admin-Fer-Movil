@@ -1,0 +1,18 @@
+.usage-banner { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; border-width: 1px 1px 1px 6px; }
+.usage-banner .card-title { margin-bottom: 6px; }
+.usage-banner .settings-text { margin-bottom: 6px; }
+.usage-banner.green { border-left-color: #2e9d5b; }
+.usage-banner.yellow { border-left-color: #e0a100; }
+.usage-banner.red { border-left-color: #c0392b; }
+.usage-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.green .usage-dot { background: #2e9d5b; }
+.yellow .usage-dot { background: #e0a100; }
+.red .usage-dot { background: #c0392b; }
+
+.usage-track { margin-top: 12px; }
+.bar-fill.yellow { background: #e0a100; }
+.bar-fill.red { background: #c0392b; }
+
+.usage-list { margin: 0; padding-left: 18px; font-size: 13px; color: #1a2b4c; line-height: 1.6; }
+.usage-blaze { margin-top: 20px; }
+a.btn-export { text-decoration: none; }
