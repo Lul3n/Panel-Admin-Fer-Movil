@@ -3,6 +3,7 @@ import {
   query, orderBy, serverTimestamp
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
+import { sendPush } from "./push";
 
 const notificationsRef = collection(db, "notifications");
 
@@ -12,9 +13,9 @@ export async function listNotifications() {
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
-// Manual notification (reminder). The automatic ones are created in publishPublication.
+// Manual notice (reminder), the automatic ones are made in publishPublication
 export async function createNotification(data) {
-  await addDoc(notificationsRef, {
+  const ref = await addDoc(notificationsRef, {
     adminId: auth.currentUser.uid,
     publicationId: data.publicationId || null,
     title: data.title,
@@ -22,6 +23,7 @@ export async function createNotification(data) {
     target: data.target,
     date: serverTimestamp(),
   });
+  return sendPush(ref.id);
 }
 
 export async function deleteNotification(id) {

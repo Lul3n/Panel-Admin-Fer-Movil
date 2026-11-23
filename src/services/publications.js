@@ -3,6 +3,7 @@ import {
   query, orderBy, where, serverTimestamp, Timestamp
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
+import { sendPush } from "./push";
 
 const publicationsRef = collection(db, "publications");
 const notificationsRef = collection(db, "notifications");
@@ -20,9 +21,7 @@ export async function listAllPublications() {
   const snapshot = await getDocs(q);
   const list = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-  // Published publications whose expiration date already passed become "expired",
-  // so the apps (which only read "published") stop showing them.
-  // This runs whenever the panel loads the list.
+  // Expired ones become "expired" so the apps stop showing them (runs on every load)
   const now = Date.now();
   for (const p of list) {
     if (p.status === "published" && p.expiresAt && p.expiresAt.toMillis() < now) {
@@ -43,7 +42,7 @@ export async function getPublication(id) {
   return { id: snapshot.id, ...snapshot.data() };
 }
 
-// Creates the publication as a draft and returns its reference (ref.id is the new id)
+// Creates it as a draft, ref.id is the new id
 export async function createPublication(data) {
   return addDoc(publicationsRef, {
     adminId: auth.currentUser.uid,
@@ -62,7 +61,7 @@ export async function createPublication(data) {
   });
 }
 
-// Edits content fields only. Status changes go through publish/unpublish.
+// Content only, status goes through publish/unpublish
 export async function updatePublication(id, data) {
   await updateDoc(doc(db, "publications", id), {
     type: data.type,
@@ -81,9 +80,9 @@ export async function publishPublication(p) {
     publishedAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
-  // replace any previous notification so republishing does not duplicate it
+  // remove the old one so republishing doesn't duplicate it
   await deleteNotificationsOf(p.id);
-  await addDoc(notificationsRef, {
+  const ref = await addDoc(notificationsRef, {
     adminId: auth.currentUser.uid,
     publicationId: p.id,
     title: p.title,
@@ -91,10 +90,11 @@ export async function publishPublication(p) {
     target: p.type,
     date: serverTimestamp(),
   });
+  // false if the push failed
+  return sendPush(ref.id);
 }
 
-// Keeps the notification of an already published publication up to date
-// after it is edited (the original date is kept)
+// Updates the notice after an edit (keeps the original date)
 export async function syncNotification(p) {
   const q = query(notificationsRef, where("publicationId", "==", p.id));
   const snapshot = await getDocs(q);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPublication, publishPublication } from "../services/publications";
+import { PUSH_FAILED_MESSAGE } from "../services/push";
 import { validateAttachments, driveImageUrl } from "../utils/validation";
 import { dateFromInput } from "../utils/dates";
 import Attachments from "../components/Attachments";
@@ -59,7 +60,8 @@ function NewPublication() {
     try {
       const ref = await createPublication(data);
       if (status === "published") {
-        await publishPublication({ id: ref.id, ...data });
+        const pushSent = await publishPublication({ id: ref.id, ...data });
+        if (!pushSent) window.alert(PUSH_FAILED_MESSAGE);
       }
       navigate("/publications");
     } catch (err) {

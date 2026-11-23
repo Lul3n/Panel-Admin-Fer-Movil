@@ -5,6 +5,7 @@ import {
   getPublication, updatePublication,
   publishPublication, unpublishPublication, syncNotification
 } from "../services/publications";
+import { PUSH_FAILED_MESSAGE } from "../services/push";
 import { validateAttachments, driveImageUrl } from "../utils/validation";
 import { dateFromInput, formatInputDate } from "../utils/dates";
 import Attachments from "../components/Attachments";
@@ -86,7 +87,8 @@ function EditPublication() {
       await updatePublication(id, data);
       if (status !== original.status) {
         if (status === "published") {
-          await publishPublication({ id, ...data });
+          const pushSent = await publishPublication({ id, ...data });
+          if (!pushSent) window.alert(PUSH_FAILED_MESSAGE);
         } else if (status === "draft") {
           await unpublishPublication(id);
         }

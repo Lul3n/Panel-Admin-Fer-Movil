@@ -27,9 +27,8 @@ const MESSAGES = {
   },
 };
 
-// Features that only exist with Blaze, no matter the usage
+// Only with Blaze, no matter the usage
 const BLAZE_ONLY = [
-  "Notificaciones push automáticas al publicar (Cloud Functions).",
   "Cambiar a vencidas las publicaciones sin abrir el panel (función programada).",
   "Subir imágenes y documentos desde el panel (Cloud Storage).",
 ];

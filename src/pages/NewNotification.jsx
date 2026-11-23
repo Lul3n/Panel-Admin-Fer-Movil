@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createNotification } from "../services/notifications";
+import { PUSH_FAILED_MESSAGE } from "../services/push";
 import { listAllPublications } from "../services/publications";
 import "../styles/PublicationForm.css";
 
@@ -25,7 +26,7 @@ function NewNotification() {
   useEffect(() => {
     async function load() {
       const all = await listAllPublications();
-      // only published ones can be linked, because the apps only read those
+      // only published ones, the apps can't read the rest
       setPublications(all.filter((p) => p.status === "published"));
     }
     load();
@@ -36,12 +37,13 @@ function NewNotification() {
     setError("");
     setSaving(true);
     try {
-      await createNotification({
+      const pushSent = await createNotification({
         title: title.trim(),
         message: message.trim(),
         target,
         publicationId,
       });
+      if (!pushSent) window.alert(PUSH_FAILED_MESSAGE);
       navigate("/notifications");
     } catch (err) {
       console.error(err);
