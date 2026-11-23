@@ -14,7 +14,7 @@ import "../styles/Stats.css";
 function Dashboard() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
-  // months the admin hid with the filter; empty = all months are shown
+  // months hidden by the filter (empty = show all)
   const [hidden, setHidden] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
 

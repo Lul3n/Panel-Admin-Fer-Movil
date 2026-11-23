@@ -6,8 +6,7 @@ export function isHttpsUrl(value) {
   }
 }
 
-// Checks the image URL and the documents list.
-// Returns { error, documents }: documents comes back trimmed, without empty rows.
+// Returns { error, documents } with empty rows removed
 export function validateAttachments(linkImg, documents) {
   if (linkImg && !isHttpsUrl(linkImg)) {
     return { error: "La URL de la imagen debe empezar con https://", documents: [] };
@@ -29,11 +28,8 @@ export function validateAttachments(linkImg, documents) {
   return { error: "", documents: cleaned };
 }
 
-// Google Drive share links open a Drive page, not the image itself, so they
-// cannot be used in <img>. This turns them into a direct image link.
-// Other URLs are returned unchanged.
-// "https://drive.google.com/file/d/ID/view?usp=sharing"
-//   -> "https://drive.google.com/thumbnail?id=ID&sz=w1000"
+// Drive share links open a page, not the image. This turns them into a direct
+// link (thumbnail?id=ID), other URLs stay the same
 export function driveImageUrl(value) {
   if (!value.includes("drive.google.com")) return value;
   const match = value.match(/\/d\/([\w-]+)/) || value.match(/[?&]id=([\w-]+)/);

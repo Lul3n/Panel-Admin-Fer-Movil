@@ -3,7 +3,7 @@ import { FileText, Plus, Trash2 } from "lucide-react";
 import { isHttpsUrl, driveImageUrl } from "../utils/validation";
 
 function Attachments({ linkImg, setLinkImg, documents, setDocuments }) {
-  // URL that failed to load, so the message disappears when the URL changes
+  // URL that failed, the message goes away when the URL changes
   const [failedUrl, setFailedUrl] = useState("");
   const imageUrl = driveImageUrl(linkImg.trim());
 

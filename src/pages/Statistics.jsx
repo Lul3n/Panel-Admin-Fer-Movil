@@ -17,7 +17,7 @@ function csvCell(value) {
   return `"${String(value).replace(/"/g, '""')}"`;
 }
 
-// Downloads the publications as a CSV file that opens in Excel
+// CSV that opens in Excel
 function exportReport(list, year, month) {
   const header = ["Título", "Audiencia", "Estado", "Fecha", "Vistas"];
   const rows = list.map((p) => {
@@ -32,7 +32,7 @@ function exportReport(list, year, month) {
   });
   const csv = [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\n");
 
-  // the BOM makes Excel read the accents correctly
+  // BOM so Excel reads the accents
   const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

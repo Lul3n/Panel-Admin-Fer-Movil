@@ -1,4 +1,4 @@
-// Optional expiration date: off by default, the date input only works when it is on
+// Optional expiration date, off by default
 function Expiration({ enabled, setEnabled, date, setDate }) {
   return (
     <div>

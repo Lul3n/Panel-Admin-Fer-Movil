@@ -12,7 +12,7 @@ const AUDIENCE_LABELS = {
   applicants: "Aspirantes",
 };
 
-// lowercase and without accents, so "publicacion" finds "Publicación"
+// no accents so "publicacion" finds "Publicación"
 function normalize(text) {
   return (text || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
@@ -66,7 +66,7 @@ function Publications() {
   });
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  // after deleting, the current page may no longer exist
+  // after deleting, the page may not exist anymore
   const currentPage = Math.min(page, totalPages);
   const visible = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 

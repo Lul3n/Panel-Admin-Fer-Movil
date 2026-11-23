@@ -1,6 +1,6 @@
-// Usage estimate of the Spark (free) plan and whether Blaze is worth it.
+// Spark usage estimate for the "Uso del plan" screen
 
-// Free limits of Spark for Cloud Firestore (standard edition)
+// Spark free limits (Firestore standard)
 export const SPARK_LIMITS = {
   readsPerDay: 50000,
   writesPerDay: 20000,
@@ -8,22 +8,22 @@ export const SPARK_LIMITS = {
   transferBytesPerMonth: 10 * 1024 * 1024 * 1024, // 10 GiB
 };
 
-// Blaze prices after the free quota, in USD (approximate, they change by region)
+// Blaze prices in USD, approximate (depend on region)
 const PRICE_PER_READ = 0.03 / 100000;
 const PRICE_PER_WRITE = 0.09 / 100000;
 
-// Assumptions of the estimate
+// Assumptions
 export const PAGE_SIZE = 20; // the apps load at most 20 publications and 20 notifications
 export const ADMIN_LOADS_PER_DAY = 20; // times a day the admin opens a screen of the panel
 
-// Date -> "2026-11-22" (same key the apps use in usage/{day})
+// Date -> "2026-11-22", same key as usage/{day}
 export function dayKey(date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
-// Average views per day in the current month, from viewsByMonth
+// Avg views per day this month
 function viewsPerDay(publications) {
   const now = new Date();
   const key = dayKey(now).slice(0, 7); // "2026-11"
@@ -35,7 +35,7 @@ function viewsPerDay(publications) {
 }
 
 function bytesOf(list) {
-  // rough size: the JSON text of the documents plus 20% for Firestore metadata
+  // rough size: JSON + 20%
   return Math.round(JSON.stringify(list).length * 1.2);
 }
 
@@ -43,8 +43,7 @@ export function estimateUsage(publications, notifications, usageDays) {
   const published = publications.filter((p) => p.status === "published").length;
   const views = viewsPerDay(publications);
 
-  // App opens: real counter if there is data from the last 7 days, otherwise
-  // we assume at least one open per view
+  // real counter if there's data from the last 7 days, if not 1 open per view
   const recent = usageDays.slice(-7);
   const hasCounter = recent.length > 0;
   const peakOpens = hasCounter ? Math.max(...recent.map((d) => d.appOpens)) : Math.ceil(views);
@@ -59,7 +58,7 @@ export function estimateUsage(publications, notifications, usageDays) {
     return Math.round(opens * readsPerOpen + views + adminReads);
   }
   function writesFor(opens) {
-    // each view is one write; the counter adds one write per open
+    // 1 write per view, +1 per open with the counter
     return Math.round(views + (hasCounter ? opens : 0));
   }
 
@@ -85,7 +84,7 @@ export function estimateUsage(publications, notifications, usageDays) {
   if (highest >= 80) level = "red";
   else if (highest >= 50) level = "yellow";
 
-  // What they would pay per month on Blaze with the current average usage
+  // monthly Blaze cost with the current usage
   const extraReads = Math.max(0, averageReads - SPARK_LIMITS.readsPerDay);
   const extraWrites = Math.max(0, averageWrites - SPARK_LIMITS.writesPerDay);
   const blazeCostPerMonth = (extraReads * PRICE_PER_READ + extraWrites * PRICE_PER_WRITE) * 30;
@@ -93,7 +92,7 @@ export function estimateUsage(publications, notifications, usageDays) {
   return {
     hasCounter, peakOpens, averageOpens, views, readsPerOpen,
     meters, highest, level, blazeCostPerMonth,
-    // opens per day that would reach the reads limit
+    // opens per day before hitting the reads limit
     maxOpens: readsPerOpen === 0 ? 0 : Math.floor((SPARK_LIMITS.readsPerDay - views - adminReads) / readsPerOpen),
   };
 }

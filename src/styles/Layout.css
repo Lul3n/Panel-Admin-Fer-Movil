@@ -120,7 +120,7 @@
   min-width: 0;
 }
 .temp-form { display: flex; flex-direction: column; gap: 12px; max-width: 520px; }
-/* narrow screens: smaller margins */
+/* small screens */
 @media (max-width: 900px) {
   .sidebar { width: 200px; }
   .layout-content { padding: 24px 20px; }

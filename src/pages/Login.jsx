@@ -19,7 +19,7 @@ function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
-      // same message for wrong email or wrong password, on purpose
+      // same message for email or password on purpose
       setError("Correo o contraseña incorrectos");
     }
     setSubmitting(false);

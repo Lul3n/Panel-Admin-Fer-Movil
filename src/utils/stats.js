@@ -23,18 +23,18 @@ export function countThisMonth(list) {
   }).length;
 }
 
-// Month key used in the viewsByMonth map, e.g. "2026-11"
+// viewsByMonth key, e.g. "2026-11"
 export function monthKey(date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   return `${date.getFullYear()}-${month}`;
 }
 
-// Views of one month ("2026-11") added across all publications
+// Views of one month across all posts
 export function viewsInMonth(list, key) {
   return list.reduce((sum, p) => sum + ((p.viewsByMonth && p.viewsByMonth[key]) || 0), 0);
 }
 
-// Months that have data, plus the current one, newest first
+// Months with data + current one, newest first
 export function availableMonths(list) {
   const keys = new Set([monthKey(new Date())]);
   for (const p of list) {
@@ -43,15 +43,14 @@ export function availableMonths(list) {
   return [...keys].sort().reverse();
 }
 
-// Years that have data, plus the current one, newest first
+// Years with data + current one, newest first
 export function availableYears(list) {
   const years = new Set(availableMonths(list).map((k) => k.slice(0, 4)));
   return [...years].sort().reverse();
 }
 
-// Views of one publication in a period. year/month are "all" or "2026" / "11".
-// With both on "all" the full counter is used, so views from before
-// viewsByMonth existed still count.
+// Views in a period (year/month can be "all"). With both "all" it uses the
+// full counter so old views still count
 export function periodViews(p, year, month) {
   if (year === "all" && month === "all") return p.views || 0;
   let sum = 0;

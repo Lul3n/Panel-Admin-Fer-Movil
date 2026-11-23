@@ -1,4 +1,4 @@
-// "2026-11-30" (from <input type="date">) -> Date at the end of that day, local time
+// "2026-11-30" -> end of that day, local time
 export function dateFromInput(value) {
   if (!value) return null;
   return new Date(`${value}T23:59:59`);

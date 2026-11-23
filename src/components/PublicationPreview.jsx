@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
 import { isHttpsUrl, driveImageUrl } from "../utils/validation";
 
-// Card that shows how the publication will look in the app
+// How the post will look in the app
 function PublicationPreview({ title, description, linkImg }) {
   const image = driveImageUrl(linkImg.trim());
 
